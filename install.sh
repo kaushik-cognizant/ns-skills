@@ -5,7 +5,7 @@
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/kaushik-cognizant/ns-skills/main/install.sh | bash
 #   curl -fsSL https://raw.githubusercontent.com/kaushik-cognizant/ns-skills/main/install.sh | bash -s -- --local
-#   SCOPE=local curl -fsSL .../install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/kaushik-cognizant/ns-skills/main/install.sh | SCOPE=local bash
 #
 # Flags:
 #   --global, -g          Install to ~/.claude/skills (default)
@@ -21,21 +21,33 @@ BRANCH="${NS_SKILLS_BRANCH:-main}"
 SCOPE="${SCOPE:-global}"
 
 print_help() {
-  sed -n '2,17p' "$0" 2>/dev/null || cat <<'EOF'
+  cat <<'EOF'
 ns-skills installer
-  --global, -g        Install to ~/.claude/skills (default)
-  --local,  -l        Install to ./.claude/skills
-  --repo OWNER/REPO   Source repo (default: kaushik-cognizant/ns-skills)
-  --branch BRANCH     Source branch (default: main)
+
+Flags:
+  --global, -g          Install to ~/.claude/skills (default)
+  --local,  -l          Install to ./.claude/skills (current directory)
+  --repo OWNER/REPO     Override source repo (default: kaushik-cognizant/ns-skills)
+  --branch BRANCH       Override source branch (default: main)
+  -h, --help            Show this help
+
+Environment overrides: SCOPE, NS_SKILLS_REPO, NS_SKILLS_BRANCH.
 EOF
+}
+
+require_value() {
+  if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+    echo "Missing value for $1" >&2
+    exit 1
+  fi
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --global|-g) SCOPE="global"; shift ;;
     --local|-l)  SCOPE="local";  shift ;;
-    --repo)      REPO="$2";      shift 2 ;;
-    --branch)    BRANCH="$2";    shift 2 ;;
+    --repo)      require_value "$@"; REPO="$2";   shift 2 ;;
+    --branch)    require_value "$@"; BRANCH="$2"; shift 2 ;;
     -h|--help)   print_help; exit 0 ;;
     *) echo "Unknown argument: $1" >&2; exit 1 ;;
   esac

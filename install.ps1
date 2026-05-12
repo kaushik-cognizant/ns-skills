@@ -60,22 +60,21 @@ try {
     }
 
     $skillsDir = Join-Path $rootDir.FullName 'skills'
-    $installed = 0
+    $skills = @(Get-ChildItem -Path $skillsDir -Directory)
 
-    Get-ChildItem -Path $skillsDir -Directory | ForEach-Object {
-        Write-Host "  Installing skill: $($_.Name)"
-        $dest = Join-Path $target $_.Name
-        if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
-        Copy-Item -Path $_.FullName -Destination $dest -Recurse
-        $installed++
-    }
-
-    if ($installed -eq 0) {
+    if ($skills.Count -eq 0) {
         throw "No skills found to install."
     }
 
+    foreach ($skill in $skills) {
+        Write-Host "  Installing skill: $($skill.Name)"
+        $dest = Join-Path $target $skill.Name
+        if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
+        Copy-Item -Path $skill.FullName -Destination $dest -Recurse
+    }
+
     Write-Host ""
-    Write-Host "Installed $installed skill(s) to $target"
+    Write-Host "Installed $($skills.Count) skill(s) to $target"
     Write-Host "Restart Claude Code and run /help to verify."
 }
 finally {
