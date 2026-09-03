@@ -2,10 +2,47 @@
 
 Claude skill files for neuro-san development.
 
+Currently tracking **neuro-san `0.6.98`** and **neuro-san-studio `0.3.20`**.
+
 ## Available skills
 
-- **[neuro-san-agent-network](skills/neuro-san-agent-network/SKILL.md)** — Create, design, and debug HOCON agent networks for the neuro-san framework.
+- **[neuro-san-agent-network](skills/neuro-san-agent-network/SKILL.md)** — Create, design, validate, and debug HOCON agent networks for the neuro-san framework.
 - **[neuro-san-coded-tool](skills/neuro-san-coded-tool/SKILL.md)** — Author Python coded tools that plug into neuro-san agent networks.
+
+Each skill is a lean `SKILL.md` plus a `references/` directory. The `SKILL.md` carries the
+core schema and decision rules and loads on every invocation; the reference files hold the
+long catalogs (model lists, toolbox tables, environment variables, worked examples) and are
+read only when needed, which keeps context cost low.
+
+```
+skills/
+├── neuro-san-agent-network/
+│   ├── SKILL.md
+│   └── references/
+│       ├── schema.md          # every top-level and per-agent key, the allow block
+│       ├── aaosa.md           # AAOSA protocol and its variants
+│       ├── llm-config.md      # providers, model names, fallbacks, reasoning
+│       ├── toolbox.md         # prebuilt tool catalog, registering new tools
+│       ├── mcp-external.md    # external agent networks and MCP servers
+│       ├── middleware.md      # middleware, Agent Skills, persistent memory
+│       ├── operations.md      # ns CLI, validation, environment variables
+│       ├── testing.md         # test fixtures and how to run them
+│       └── examples.md        # complete working networks
+└── neuro-san-coded-tool/
+    ├── SKILL.md
+    └── references/
+        ├── patterns.md              # templates, args, sly_data, returns, logging
+        ├── toolbox-registration.md  # making a tool reusable across networks
+        ├── advanced.md              # calling agents, progress, reservations
+        ├── testing.md               # unit tests and integration fixtures
+        └── env-vars.md              # environment variable catalog
+```
+
+## Archive
+
+Previous versions of the skills are kept under [`archive/`](archive/) for reference. They are
+deliberately outside `skills/` — the installers copy every subdirectory of `skills/`, so an
+archive placed there would be installed alongside the live skills.
 
 ## Quick install
 
